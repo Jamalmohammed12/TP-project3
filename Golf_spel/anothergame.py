@@ -27,18 +27,24 @@ def collision(ball, border_pos_x, border_pos_y):
     if ball.position.y - ball.radius <= 0 or ball.position.y + ball.radius >= border_pos_y:
         ball.velocity.y *= -1  # Reverse vertical velocity
 
-def create_borders(border_width, border_hight, x, y)
+def create_borders(screen, color, x, y, width, height):
+    pygame.draw.rect(screen, color, (x, y, width, height))
     
-    
+
+def create_hole(screen, x, y, radius):
+    pygame.draw.circle(screen, (0, 0, 0), (x, y), radius)
 
 pygame.init()  # Initialize pygame
 
 # --------variables---------
 WIDTH, HEIGHT = 1400, 800
+BORDER_WIDTH = 20
+BORDER_HEIGHT = 30
 
 # Define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+GRAY = (128, 128, 128)
 # ----------stop variables--------
 
 # ---------screen info ---------
@@ -64,6 +70,10 @@ ball_image = pygame.transform.scale(ball_image, (2 * ball_radius, 2 * ball_radiu
 # Create a Golf Ball instance
 golf_ball = Ball(pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2), ball_radius)
 
+# Create hole coordinates and radius
+hole_x, hole_y = 200, 700
+hole_radius = 17
+
 # Flag to indicate if the ball is currently being dragged
 dragging = False
 
@@ -72,10 +82,12 @@ running = True
 # Variables to store the start position of the drag
 drag_start_pos = None
 
+# Font settings
+font = pygame.font.Font(None, 36)
+
 # game loop
 while running:
 
-    # for loop through the event queue
     for event in pygame.event.get():
         # Check for QUIT event
         if event.type == pygame.QUIT:
@@ -100,16 +112,34 @@ while running:
                 velocity_magnitude = min(drag_direction.length() * 0.1, 35)  # Adjust multiplier and maximum velocity
                 golf_ball.velocity = drag_direction.normalize() * velocity_magnitude
 
-    # Handle border collisions
+    # Border collisions
     collision(golf_ball, WIDTH, HEIGHT)
+
+    # Check if the ball enters the hole
+    if math.sqrt((golf_ball.position.x - hole_x) ** 2 + (golf_ball.position.y - hole_y) ** 2) <= hole_radius:
+        # Display a pop-up message
+        popup_text = font.render("Congratulations! You win!", True, (255, 255, 255))
+        popup_rect = popup_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+        screen.blit(popup_text, popup_rect)
+        pygame.display.flip()
+        # Wait for a moment before exiting or moving to the next level
+        pygame.time.delay(2000)
+        # Close the game window
+        running = False
 
     # Clear the screen
     screen.fill(background_colour)
+
+    # Draw borders
+    create_borders(screen, BLACK, WIDTH // 2 - 350, 150, BORDER_WIDTH, BORDER_HEIGHT)
 
     # Draw the ball
     ball_rect = ball_image.get_rect(center=golf_ball.position)
     golf_ball.move()
     screen.blit(ball_image, ball_rect)
+
+    # Draw the hole
+    create_hole(screen, hole_x, hole_y, hole_radius)
 
     # Draw distance line from ball to mouse position only when dragging
     if dragging:
