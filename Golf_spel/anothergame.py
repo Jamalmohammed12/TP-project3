@@ -34,6 +34,13 @@ def create_borders(screen, color, x, y, width, height):
 def create_hole(screen, x, y, radius):
     pygame.draw.circle(screen, (0, 0, 0), (x, y), radius)
 
+def tries():
+    mouse_pos = pygame.mouse.get_pos()
+    i = 0 
+    if mouse_pos[1]
+        i += 1
+
+
 pygame.init()  # Initialize pygame
 
 # --------variables---------
