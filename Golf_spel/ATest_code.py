@@ -33,6 +33,8 @@ class Object:
 # create_borders(screen, color, x, y, width, height):
  #   pygame.draw.rect(screen, color, (x, y, width, height))
     
+def win():
+
 
 def create_hole(screen, x, y, radius):
     pygame.draw.circle(screen, (0, 0, 0), (x, y), radius)
